@@ -4,7 +4,13 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
 from config import settings
-from keyboards.user_menu import MENU_CB_FAQ, MENU_CB_SUPPORT, faq_inline_keyboard
+from keyboards.user_menu import (
+    FAQ_CALLBACK_PREFIX,
+    MENU_CB_FAQ,
+    MENU_CB_SUPPORT,
+    back_button_inline_keyboard,
+    faq_inline_keyboard,
+)
 
 router = Router(name="faq_support")
 
@@ -44,7 +50,11 @@ async def faq_limit_cb(query: CallbackQuery) -> None:
         + settings.support_username.lstrip("@")
         + "."
     )
-    await query.message.answer(txt, parse_mode="HTML")
+    await query.message.answer(
+        txt,
+        parse_mode="HTML",
+        reply_markup=back_button_inline_keyboard(back_callback=f"{FAQ_CALLBACK_PREFIX}back"),
+    )
 
 
 @router.callback_query(F.data == "faq:refs")
@@ -59,7 +69,11 @@ async def faq_refs_cb(query: CallbackQuery) -> None:
         "<b>+1</b> к дневному лимиту (навсегда, на каждый день отдельно).\n"
         "• Если приглашённый уже был в боте, повторное начисление не делается."
     )
-    await query.message.answer(txt, parse_mode="HTML")
+    await query.message.answer(
+        txt,
+        parse_mode="HTML",
+        reply_markup=back_button_inline_keyboard(back_callback=f"{FAQ_CALLBACK_PREFIX}back"),
+    )
 
 
 @router.callback_query(F.data == "faq:pay")
@@ -75,7 +89,23 @@ async def faq_pay_cb(query: CallbackQuery) -> None:
         "• После успешной оплаты запросы начисляются автоматически и сразу видны в «Мой лимит».\n"
         "• Технический <code>payload</code> сохраняется только для безопасной привязки платежа к вашему аккаунту."
     )
-    await query.message.answer(txt, parse_mode="HTML")
+    await query.message.answer(
+        txt,
+        parse_mode="HTML",
+        reply_markup=back_button_inline_keyboard(back_callback=f"{FAQ_CALLBACK_PREFIX}back"),
+    )
+
+
+@router.callback_query(F.data == f"{FAQ_CALLBACK_PREFIX}back")
+async def faq_back_cb(query: CallbackQuery) -> None:
+    await query.answer()
+    if not query.message:
+        return
+    await query.message.answer(
+        FAQ_INTRO,
+        parse_mode="HTML",
+        reply_markup=faq_inline_keyboard(),
+    )
 
 
 @router.callback_query(F.data == MENU_CB_SUPPORT)
@@ -91,4 +121,8 @@ async def support_route_cb(query: CallbackQuery) -> None:
         "<b>Как писать:</b> шаги, время проблемы, ваш user id (его видно в профиле Telegram).\n\n"
         "Обычные вопросы к искусственному интеллекту — просто текстом в чат, они не уходят в поддержку по умолчанию."
     )
-    await query.message.answer(txt, parse_mode="HTML")
+    await query.message.answer(
+        txt,
+        parse_mode="HTML",
+        reply_markup=back_button_inline_keyboard(),
+    )

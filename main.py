@@ -1,4 +1,4 @@
-"""Запуск бота Qubit (aiogram 3 + Groq)."""
+"""Запуск бота Qubit (aiogram 3 + RouterAI)."""
 
 import asyncio
 import contextlib
@@ -14,7 +14,7 @@ from database import Database
 from handlers import build_user_router
 from middlewares.ban_gate import BanGateMiddleware
 from middlewares.inject_globals import InjectGlobalsMiddleware
-from services.groq_service import GroqService
+from services.routerai_service import RouterAIService
 from services.yoomoney_webhook_app import run_yoomoney_server
 
 logging.basicConfig(
@@ -29,12 +29,16 @@ async def main() -> None:
         default=DefaultBotProperties(),
     )
     db = Database()
-    groq = GroqService(api_key=settings.groq_api_key, model=settings.groq_model)
+    ai = RouterAIService(
+        api_key=settings.routerai_api_key,
+        base_url=settings.routerai_base_url,
+        model=settings.routerai_model,
+    )
 
     await db.connect()
 
     dp = Dispatcher(storage=MemoryStorage())
-    dp.update.middleware(InjectGlobalsMiddleware(db=db, groq=groq))
+    dp.update.middleware(InjectGlobalsMiddleware(db=db, ai=ai))
     dp.message.middleware(BanGateMiddleware(db))
     dp.callback_query.middleware(BanGateMiddleware(db))
 
@@ -45,7 +49,7 @@ async def main() -> None:
         "Qubit polling… timezone=%s daily_free=%s model=%s",
         settings.timezone,
         settings.daily_free_limit,
-        settings.groq_model,
+        settings.routerai_model,
     )
 
     stop_webhook = asyncio.Event()

@@ -1,4 +1,4 @@
-"""Вопросы к модели Groq через ежедневную квоту."""
+"""Вопросы к модели RouterAI через ежедневную квоту."""
 
 import asyncio
 import re
@@ -12,7 +12,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from database import Database
-from services.groq_service import GroqService
+from services.routerai_service import RouterAIService
 from services.quota_service import can_make_request, record_successful_ai_request
 
 router = Router(name="ai_question")
@@ -68,7 +68,7 @@ async def ask_ai(
     message: Message,
     state: FSMContext,
     db: Database,
-    groq: GroqService,
+    ai: RouterAIService,
 ) -> None:
     if await _should_skip_ai(message, state):
         return
@@ -92,7 +92,7 @@ async def ask_ai(
     try:
         last_preview = ""
         last_preview_at = 0.0
-        async for partial in groq.stream_complete(prompt, history=llm_history):
+        async for partial in ai.stream_complete(prompt, history=llm_history):
             body = partial.strip()
             plain_preview = _strip_html(body)
             if not plain_preview:
@@ -111,7 +111,7 @@ async def ask_ai(
             last_preview_at = now
 
         if not body:
-            body = await asyncio.to_thread(groq.complete_sync, prompt, llm_history)
+            body = await asyncio.to_thread(ai.complete_sync, prompt, llm_history)
     except Exception as exc:
         err = (
             "Не удалось обратиться к нейросети. Попробуйте позже.\n\n"

@@ -6,7 +6,7 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
 from database import Database
-from keyboards.user_menu import MENU_CB_CHATS
+from keyboards.user_menu import MENU_CB_BACK, MENU_CB_CHATS
 from services.admin_rights import is_admin
 
 router = Router(name="chats")
@@ -32,6 +32,9 @@ async def chats_inline_keyboard(db: Database, user_id: int) -> InlineKeyboardMar
                 )
             ]
         )
+    rows.append(
+        [InlineKeyboardButton(text="🔙 Назад", callback_data=MENU_CB_BACK)]
+    )
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 

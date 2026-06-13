@@ -4,7 +4,7 @@ from aiogram import Bot, F, Router
 from aiogram.types import CallbackQuery
 
 from database import Database
-from keyboards.user_menu import MENU_CB_REFS
+from keyboards.user_menu import MENU_CB_REFS, back_button_inline_keyboard
 from services.referral_service import deep_link
 
 router = Router(name="referrals")
@@ -26,4 +26,4 @@ async def show_referrals_cb(query: CallbackQuery, bot: Bot, db: Database) -> Non
         f"Ваша ссылка:\n<code>{link}</code>\n\n"
         "<i>Покупку запросов можно оформить из меню («Купить запросы»).</i>"
     )
-    await query.message.answer(txt, parse_mode="HTML")
+    await query.message.answer(txt, parse_mode="HTML", reply_markup=back_button_inline_keyboard())

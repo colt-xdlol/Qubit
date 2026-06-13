@@ -4,7 +4,7 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
 from database import Database
-from keyboards.user_menu import MENU_CB_LIMIT
+from keyboards.user_menu import MENU_CB_LIMIT, back_button_inline_keyboard
 from services.quota_service import quota_snapshot
 
 router = Router(name="usage_status")
@@ -23,6 +23,7 @@ async def show_limit_cb(query: CallbackQuery, db: Database) -> None:
             "👑 <b>Вы администратор</b>\n\n"
             "Суточные лимиты для вас не применяются — можно задавать вопросы без ограничений.",
             parse_mode="HTML",
+            reply_markup=back_button_inline_keyboard(),
         )
         return
 
@@ -35,4 +36,8 @@ async def show_limit_cb(query: CallbackQuery, db: Database) -> None:
         "к максимуму на каждый день.\n\n"
         "<i>Счётчик обнуляется при наступлении нового календарного дня в этой зоне.</i>"
     )
-    await query.message.answer(text, parse_mode="HTML")
+    await query.message.answer(
+        text,
+        parse_mode="HTML",
+        reply_markup=back_button_inline_keyboard(),
+    )

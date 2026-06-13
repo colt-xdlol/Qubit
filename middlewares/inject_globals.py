@@ -5,17 +5,17 @@ from typing import Any, Awaitable, Callable
 from aiogram import BaseMiddleware
 
 from database import Database
-from services.groq_service import GroqService
+from services.routerai_service import RouterAIService
 
 
 class InjectGlobalsMiddleware(BaseMiddleware):
     def __init__(
         self,
         db: Database,
-        groq: GroqService,
+        ai: RouterAIService,
     ) -> None:
         self._db = db
-        self._groq = groq
+        self._ai = ai
 
     async def __call__(
         self,
@@ -24,5 +24,5 @@ class InjectGlobalsMiddleware(BaseMiddleware):
         data: dict[str, Any],
     ) -> Any:
         data["db"] = self._db
-        data["groq"] = self._groq
+        data["ai"] = self._ai
         return await handler(event, data)

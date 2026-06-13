@@ -11,8 +11,9 @@ class Settings(BaseSettings):
     )
 
     bot_token: str
-    groq_api_key: str
-    groq_model: str = "llama-3.3-70b-versatile"
+    routerai_api_key: str
+    routerai_base_url: str = "https://api.routerai.io/v1"
+    routerai_model: str = "deepseek/deepseek-v4-flash"
     admin_ids: str = ""
     daily_free_limit: int = 10
     timezone: str = "Europe/Moscow"

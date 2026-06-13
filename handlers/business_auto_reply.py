@@ -7,7 +7,7 @@ from aiogram import F, Router
 from aiogram.types import Message
 
 from database import Database
-from services.groq_service import GroqService
+from services.routerai_service import RouterAIService
 
 router = Router(name="business_auto_reply")
 
@@ -27,7 +27,7 @@ def _history_to_llm_messages(rows: list) -> list[dict[str, str]]:
 async def business_autoreply_handler(
     message: Message,
     db: Database,
-    groq: GroqService,
+    ai: RouterAIService,
 ) -> None:
     if not message.business_connection_id:
         return
@@ -53,7 +53,7 @@ async def business_autoreply_handler(
     llm_history = [business_instruction, *llm_history]
 
     try:
-        answer = await asyncio.to_thread(groq.complete_sync, prompt, llm_history)
+        answer = await asyncio.to_thread(ai.complete_sync, prompt, llm_history)
     except Exception:
         return
 

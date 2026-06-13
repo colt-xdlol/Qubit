@@ -14,12 +14,16 @@ MENU_CB_CHATS = "menu:chats"
 MENU_CB_FAQ = "menu:faq"
 MENU_CB_SUPPORT = "menu:support"
 MENU_CB_ADMIN = "menu:admin"
+MENU_CB_BACK = "menu:back"
 
 
 def main_inline_keyboard(user_id: int) -> InlineKeyboardMarkup:
     rows: list[list[InlineKeyboardButton]] = [
         [
-            InlineKeyboardButton(text="📊 Мой лимит", callback_data=MENU_CB_LIMIT),
+            InlineKeyboardButton(
+                text="📊 Мой лимит",
+                callback_data=MENU_CB_LIMIT,
+            ),
             InlineKeyboardButton(text="🤝 Рефералы", callback_data=MENU_CB_REFS),
         ],
         [
@@ -43,6 +47,21 @@ def main_inline_keyboard(user_id: int) -> InlineKeyboardMarkup:
             ]
         )
     return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+def back_button_inline_keyboard(
+    back_callback: str = MENU_CB_BACK,
+) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🔙 Назад",
+                    callback_data=back_callback,
+                ),
+            ],
+        ],
+    )
 
 
 def faq_inline_keyboard() -> InlineKeyboardMarkup:
@@ -71,6 +90,12 @@ def faq_inline_keyboard() -> InlineKeyboardMarkup:
                 InlineKeyboardButton(
                     text="Написать в поддержку",
                     url=f"https://t.me/{support}",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text="🔙 Назад",
+                    callback_data=MENU_CB_BACK,
                 ),
             ],
         ]
